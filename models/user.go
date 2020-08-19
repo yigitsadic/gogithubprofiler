@@ -7,7 +7,7 @@ import (
 
 type UserLanguages struct {
 	Name   string `json:"name"`
-	Weight int    `json:"weight"`
+	Weight int    `json:"-"`
 }
 
 type User struct {
@@ -80,11 +80,22 @@ func NewUser(res *client.GraphQLResponse) *User {
 		return langArr[i].Weight < langArr[j].Weight
 	})
 
+	rvr := reverse(langArr)
+
 	if len(langArr) < 6 {
-		usr.Languages = langArr
+		usr.Languages = rvr
 	} else {
-		usr.Languages = langArr[5:len(langArr)]
+		usr.Languages = rvr[:5]
 	}
 
 	return usr
+}
+
+func reverse(given []UserLanguages) []UserLanguages {
+	var ret []UserLanguages
+	for x := len(given) - 1; x >= 0; x -= 1 {
+		ret = append(ret, given[x])
+	}
+
+	return ret
 }

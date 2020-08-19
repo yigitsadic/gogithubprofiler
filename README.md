@@ -30,24 +30,19 @@ JSON output is like below:
   "repos": 16,
   "languages": [
     {
-      "name": "TypeScript",
-      "weight": 21
+      "name": "Ruby"
     },
     {
-      "name": "HTML",
-      "weight": 34
+      "name": "Go"
     },
     {
-      "name": "JavaScript",
-      "weight": 45
+      "name": "JavaScript"
     },
     {
-      "name": "Go",
-      "weight": 75
+      "name": "HTML"
     },
     {
-      "name": "Ruby",
-      "weight": 134
+      "name": "TypeScript"
     }
   ]
 }
