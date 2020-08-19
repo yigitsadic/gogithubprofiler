@@ -47,9 +47,7 @@ func NewUser(res *client.GraphQLResponse) *User {
 	var langMap = make(map[string]int)
 	var langArr []UserLanguages
 
-	var totalRepoCount uint32
-	totalRepoCount += res.Data["user"].Repositories.TotalCount
-	totalRepoCount += res.Data["user"].ContributionCount.TotalCount
+	totalRepoCount := res.Data["user"].Repositories.TotalCount + res.Data["user"].ContributionCount.TotalCount
 	usr.Repos = totalRepoCount
 
 	var stars uint32
