@@ -3,7 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yigitsadic/gogithubprofiler/shared_errors"
+	"github.com/yigitsadic/gogithubprofiler/shared"
 	"log"
 	"net/http"
 	"strings"
@@ -36,7 +36,7 @@ func (g *GraphQLClient) generatePayload() (string, error) {
 
 	a, err := json.Marshal(payloadMap)
 	if err != nil {
-		return "", shared_errors.ErrUnableToMarshalToJson
+		return "", shared.ErrUnableToMarshalToJson
 	}
 
 	return string(a), nil
@@ -86,7 +86,7 @@ func (g *GraphQLClient) FetchUser() (*GraphQLResponse, error) {
 	}
 
 	if deserialized.Errors != nil {
-		return nil, shared_errors.ErrRequestedUserNotFound
+		return nil, shared.ErrRequestedUserNotFound
 	}
 
 	return &deserialized, nil
