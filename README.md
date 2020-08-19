@@ -23,11 +23,32 @@ JSON output is like below:
 {
   "userName": "Yiğit Sadıç",
   "name": "yigitsadic",
-  "profilePicture": "https://avatars3.githubusercontent.com/u/727840?u=1cd118b339885ab5d46aeec8bb40d6ba31652203\u0026v=4",
-  "totalPoint": 582,
+  "profilePicture": "https://avatars3.githubusercontent.com/u/727840?u=1cd118b339885ab5d46aeec8bb40d6ba31652203&v=4",
+  "totalPoint": 592,
   "stars": 3,
   "followers": 44,
-  "repos": 15,
-  "languages": null
+  "repos": 16,
+  "languages": [
+    {
+      "name": "TypeScript",
+      "weight": 21
+    },
+    {
+      "name": "HTML",
+      "weight": 34
+    },
+    {
+      "name": "JavaScript",
+      "weight": 45
+    },
+    {
+      "name": "Go",
+      "weight": 75
+    },
+    {
+      "name": "Ruby",
+      "weight": 134
+    }
+  ]
 }
 ```

@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/yigitsadic/gogithubprofiler/client"
+	"sort"
 )
 
 type UserLanguages struct {
@@ -20,6 +21,7 @@ type User struct {
 	Languages      []UserLanguages `json:"languages"`
 }
 
+// Fetches user from Github GraphQL API.
 func FetchUser(userName, auth string) (*User, error) {
 	c := client.NewGraphQLClient(auth, userName)
 
@@ -33,6 +35,7 @@ func FetchUser(userName, auth string) (*User, error) {
 	return usr, nil
 }
 
+// Initializes a new user with given GraphQLResponse.
 func NewUser(res *client.GraphQLResponse) *User {
 	usr := &User{
 		Name:           res.Data["user"].Login,
@@ -42,6 +45,7 @@ func NewUser(res *client.GraphQLResponse) *User {
 	}
 
 	var langMap = make(map[string]int)
+	var langArr []UserLanguages
 
 	var totalRepoCount uint32
 	totalRepoCount += res.Data["user"].Repositories.TotalCount
@@ -57,6 +61,8 @@ func NewUser(res *client.GraphQLResponse) *User {
 			} else {
 				langMap[lang.Name] = 1
 			}
+
+			langMap[item.PrimaryLanguage.Name] = langMap[item.PrimaryLanguage.Name] + 10
 		}
 	}
 	usr.Stars = stars
@@ -64,10 +70,20 @@ func NewUser(res *client.GraphQLResponse) *User {
 	usr.TotalPoint = stars*100 + totalRepoCount*10 + usr.Followers*3
 
 	for k, v := range langMap {
-		usr.Languages = append(usr.Languages, UserLanguages{
+		langArr = append(langArr, UserLanguages{
 			Name:   k,
 			Weight: v,
 		})
+	}
+
+	sort.SliceStable(langArr, func(i, j int) bool {
+		return langArr[i].Weight < langArr[j].Weight
+	})
+
+	if len(langArr) < 6 {
+		usr.Languages = langArr
+	} else {
+		usr.Languages = langArr[5:len(langArr)]
 	}
 
 	return usr

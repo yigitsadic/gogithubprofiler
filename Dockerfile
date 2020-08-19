@@ -4,10 +4,10 @@ WORKDIR /app/src
 
 COPY . .
 
-RUN go build -o main
+RUN go build -o gogithubprofiler
 
 FROM alpine
 
-COPY --from=compiler /app/src/main /app/main
+COPY --from=compiler /app/src/gogithubprofiler /gogithubprofiler
 
-ENTRYPOINT ["/app/main"]
+ENTRYPOINT ["/gogithubprofiler"]
