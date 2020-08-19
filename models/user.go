@@ -63,5 +63,12 @@ func NewUser(res *client.GraphQLResponse) *User {
 
 	usr.TotalPoint = stars*100 + totalRepoCount*10 + usr.Followers*3
 
+	for k, v := range langMap {
+		usr.Languages = append(usr.Languages, UserLanguages{
+			Name:   k,
+			Weight: v,
+		})
+	}
+
 	return usr
 }
