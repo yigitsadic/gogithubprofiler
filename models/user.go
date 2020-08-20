@@ -2,23 +2,25 @@ package models
 
 import (
 	"github.com/yigitsadic/gogithubprofiler/client"
+	"github.com/yigitsadic/gogithubprofiler/shared"
 	"sort"
 )
 
-type UserLanguages struct {
-	Name   string `json:"name"`
-	Weight int    `json:"-"`
+type User struct {
+	UserName       string                 `json:"userName"`
+	Name           string                 `json:"name"`
+	ProfilePicture string                 `json:"profilePicture"`
+	TotalPoint     uint32                 `json:"totalPoint"`
+	Stars          uint32                 `json:"stars"`
+	Followers      uint32                 `json:"followers"`
+	Repos          uint32                 `json:"repos"`
+	Languages      []shared.UserLanguages `json:"languages"`
 }
 
-type User struct {
-	UserName       string          `json:"userName"`
-	Name           string          `json:"name"`
-	ProfilePicture string          `json:"profilePicture"`
-	TotalPoint     uint32          `json:"totalPoint"`
-	Stars          uint32          `json:"stars"`
-	Followers      uint32          `json:"followers"`
-	Repos          uint32          `json:"repos"`
-	Languages      []UserLanguages `json:"languages"`
+// Calculates total developer point based on user's
+// starred repositories, followers and repository count.
+func (u User) calculateTotalPoints() uint32 {
+	return u.Stars*100 + u.Repos*10 + u.Repos*3
 }
 
 // Fetches user from Github GraphQL API.
@@ -42,37 +44,13 @@ func NewUser(res *client.GraphQLResponse) *User {
 		UserName:       res.Data["user"].Name,
 		ProfilePicture: res.Data["user"].AvatarUrl,
 		Followers:      res.Data["user"].Followers.TotalCount,
+		Stars:          res.Data["user"].Repositories.CalculateStars(),
+		Repos:          res.Data["user"].CalculateTotalRepositoryCount(),
 	}
 
-	var langMap = make(map[string]int)
-	var langArr []UserLanguages
+	langArr := res.Data["user"].Repositories.ParseUsedLanguages()
 
-	totalRepoCount := res.Data["user"].Repositories.TotalCount + res.Data["user"].ContributionCount.TotalCount
-	usr.Repos = totalRepoCount
-
-	var stars uint32
-	for _, item := range res.Data["user"].Repositories.Nodes {
-		stars += item.StarNode.TotalCount
-		for _, lang := range item.Languages.Nodes {
-			if val, ok := langMap[lang.Name]; ok {
-				langMap[lang.Name] = val + 1
-			} else {
-				langMap[lang.Name] = 1
-			}
-
-			langMap[item.PrimaryLanguage.Name] = langMap[item.PrimaryLanguage.Name] + 10
-		}
-	}
-	usr.Stars = stars
-
-	usr.TotalPoint = stars*100 + totalRepoCount*10 + usr.Followers*3
-
-	for k, v := range langMap {
-		langArr = append(langArr, UserLanguages{
-			Name:   k,
-			Weight: v,
-		})
-	}
+	usr.TotalPoint = usr.calculateTotalPoints()
 
 	sort.SliceStable(langArr, func(i, j int) bool {
 		return langArr[i].Weight < langArr[j].Weight
@@ -89,8 +67,8 @@ func NewUser(res *client.GraphQLResponse) *User {
 	return usr
 }
 
-func reverse(given []UserLanguages) []UserLanguages {
-	var ret []UserLanguages
+func reverse(given []shared.UserLanguages) []shared.UserLanguages {
+	var ret []shared.UserLanguages
 	for x := len(given) - 1; x >= 0; x -= 1 {
 		ret = append(ret, given[x])
 	}

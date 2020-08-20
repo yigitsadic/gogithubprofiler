@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	BaseUrl = "https://api.github.com/graphql"
+	BaseUrl     = "https://api.github.com/graphql"
+	ContentType = "application/json"
 )
 
 type GraphQLClient struct {
@@ -51,7 +52,7 @@ func (g *GraphQLClient) generateRequest(payload string) (*http.Request, error) {
 	}
 
 	req.Header.Add("Authorization", g.Authorization)
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Type", ContentType)
 
 	return req, nil
 }
